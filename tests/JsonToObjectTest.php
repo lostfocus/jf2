@@ -104,6 +104,35 @@ class JsonToObjectTest extends TestCase
         self::assertSame('card', (string)$alice->getType());
     }
 
+    /**
+     * @throws Exception\Jf2Exception
+     */
+    public function testExample08(): void
+    {
+        $content = $this->loadExample('jf2/spec-ex-08.json');
+        $jf2 = Jf2::fromJsonString($content);
+        self::assertCount(7, $jf2);
+        self::assertSame('entry', (string)$jf2->getType());
+        $properties = $jf2->getProperties();
+        self::assertCount(1, $properties['author']);
+        $author = $properties['author']->getValue();
+        self::assertInstanceOf(Jf2::class, $author);
+        self::assertSame('card', (string)$author->getType());
+        self::assertArrayHasKey('like-of', $properties);
+        self::assertCount(2, $properties['category']);
+        self::assertIsArray($properties['references']);
+        self::assertArrayHasKey('http://bob.example.com', $properties['references']);
+        self::assertInstanceOf(Jf2PropertyInterface::class, $properties['references']['http://bob.example.com']);
+        $bobCard = $properties['references']['http://bob.example.com']->getValue();
+        self::assertInstanceOf(Jf2::class, $bobCard);
+        self::assertSame('card', (string)$bobCard->getType());
+        self::assertArrayHasKey('http://bob.example.com/post/100', $properties['references']);
+        self::assertInstanceOf(Jf2PropertyInterface::class, $properties['references']['http://bob.example.com/post/100']);
+        $bobPost = $properties['references']['http://bob.example.com/post/100']->getValue();
+        self::assertInstanceOf(Jf2::class, $bobPost);
+        self::assertSame('entry', (string)$bobPost->getType());
+    }
+
     private function loadExample(string $path): string
     {
         return file_get_contents(__DIR__ . '/samples/' . $path);
