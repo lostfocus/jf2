@@ -133,6 +133,23 @@ class JsonToObjectTest extends TestCase
         self::assertSame('entry', (string)$bobPost->getType());
     }
 
+    /**
+     * @throws Exception\Jf2Exception
+     */
+    public function testExample09(): void
+    {
+        $content = $this->loadExample('jf2/spec-ex-09.json');
+        $jf2 = Jf2::fromJsonString($content);
+        self::assertCount(5, $jf2);
+        $properties = $jf2->getProperties();
+        self::assertArrayHasKey('children', $properties);
+        self::assertCount(2, $properties['children']);
+        $children = $properties['children']->getValue();
+        self::assertIsArray($children);
+        self::assertInstanceOf(Jf2::class, $children[0]->getValue());
+        self::assertInstanceOf(Jf2::class, $children[1]->getValue());
+    }
+
     private function loadExample(string $path): string
     {
         return file_get_contents(__DIR__ . '/samples/' . $path);

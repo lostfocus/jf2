@@ -14,4 +14,5 @@ class Jf2Exception extends Exception
     public const CONTENT_MUST_HAVE_HTML = 5;
     public const VIDEO_MUST_HAVE_URL = 6;
     public const UNEXPECTED_TYPE = 7;
+    public const CLASS_SHOULD_HAVE_A_TYPE = 8;
 }

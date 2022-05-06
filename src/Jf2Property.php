@@ -17,11 +17,19 @@ class Jf2Property implements Jf2PropertyInterface
             ->addValue($value);
     }
 
+    /**
+     * @throws Jf2Exception
+     */
     public static function fromArray(array $value): Jf2PropertyInterface
     {
         $property = new self();
         foreach ($value as $item) {
-            $property->addValue($item);
+            if ($item instanceof stdClass) {
+                $property->addValue(self::fromClass($item));
+
+            } else {
+                $property->addValue($item);
+            }
         }
         return $property;
     }
@@ -31,12 +39,11 @@ class Jf2Property implements Jf2PropertyInterface
      */
     public static function fromClass(stdClass $value): Jf2PropertyInterface
     {
-        $property = new self();
-        if (property_exists($value, 'type')) {
-            $property->addValue(Jf2::fromJsonClass($value));
-        } else {
-            var_dump($value);
+        if (!property_exists($value, 'type')) {
+            throw new Jf2Exception('Class should have a type', Jf2Exception::CLASS_SHOULD_HAVE_A_TYPE);
         }
+        $property = new self();
+        $property->addValue(Jf2::fromJsonClass($value));
         return $property;
     }
 
