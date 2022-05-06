@@ -1,0 +1,42 @@
+{
+  "name": "lostfocus/jf2",
+  "type": "library",
+  "description": "Basic mapping and handling of jf2 files and objects",
+  "homepage": "https://github.com/lostfocus/jf2",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Dominik Schwind",
+      "email": "dschwind@lostfocus.de",
+      "homepage": "https://lostfocus.de",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "8.0.*|8.1.*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": ">=8.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "lostfocus\\jf2\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "lastfocus\\jf2\\": "tests"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    }
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
