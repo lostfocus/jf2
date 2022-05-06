@@ -7,6 +7,7 @@ use Countable;
 use JsonException;
 use JsonSerializable;
 use Lostfocus\Jf2\Exception\Jf2Exception;
+use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
 use Lostfocus\Jf2\Property\Jf2Content;
 use Lostfocus\Jf2\Property\Jf2Video;
 use stdClass;
@@ -14,7 +15,7 @@ use Stringable;
 
 class Jf2 implements JsonSerializable, Stringable, Countable
 {
-    /** @var Jf2Property[] */
+    /** @var array<Jf2PropertyInterface|array> */
     private array $properties = [];
 
     /**
@@ -49,6 +50,19 @@ class Jf2 implements JsonSerializable, Stringable, Countable
                 $jf2->properties[$key] = Jf2Content::fromValue($value);
             } elseif ($key === 'video') {
                 $jf2->properties[$key] = Jf2Video::fromValue($value);
+            } elseif ($key === 'references') {
+                if (!array_key_exists($key, $jf2->properties)) {
+                    $jf2->properties[$key] = [];
+                }
+                foreach ($value as $refKey => $refValue) {
+                    if (is_array($refValue)) {
+                        $jf2->properties[$key][$refKey] = Jf2Property::fromArray($refValue);
+                    } elseif ($refValue instanceof stdClass) {
+                        $jf2->properties[$key][$refKey] = Jf2Property::fromClass($refValue);
+                    } else {
+                        $jf2->properties[$key][$refKey] = Jf2Property::fromString((string)$refValue);
+                    }
+                }
             } elseif (is_array($value)) {
                 $jf2->properties[$key] = Jf2Property::fromArray($value);
             } elseif ($value instanceof stdClass) {

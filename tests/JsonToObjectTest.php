@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Lostfocus\Jf2;
 
+use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
 use Lostfocus\Jf2\Property\Jf2Content;
 use PHPUnit\Framework\TestCase;
 
@@ -82,6 +83,25 @@ class JsonToObjectTest extends TestCase
         $properties = $jf2->getProperties();
         self::assertArrayHasKey('video', $properties);
         self::assertCount(3, $properties['video']);
+    }
+
+    /**
+     * @throws Exception\Jf2Exception
+     */
+    public function testExample07(): void
+    {
+        $content = $this->loadExample('jf2/spec-ex-07.json');
+        $jf2 = Jf2::fromJsonString($content);
+        self::assertCount(8, $jf2);
+        self::assertSame('entry', (string)$jf2->getType());
+        $properties = $jf2->getProperties();
+        self::assertArrayHasKey('references', $properties);
+        self::assertIsArray($properties['references']);
+        self::assertArrayHasKey('http://alice.example.com', $properties['references']);
+        self::assertInstanceOf(Jf2PropertyInterface::class, $properties['references']['http://alice.example.com']);
+        $alice = $properties['references']['http://alice.example.com']->getValue();
+        self::assertInstanceOf(Jf2::class, $alice);
+        self::assertSame('card', (string)$alice->getType());
     }
 
     private function loadExample(string $path): string
