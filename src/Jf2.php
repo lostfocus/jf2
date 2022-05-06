@@ -93,10 +93,13 @@ class Jf2 implements JsonSerializable, Stringable, Countable
     }
 
     /**
-     * @return Jf2Property|null
+     * @return Jf2PropertyInterface|null
      */
-    public function getType(): ?Jf2Property
+    public function getType(): ?Jf2PropertyInterface
     {
+        if (!array_key_exists('type', $this->properties) && array_key_exists('children', $this->properties)) {
+            return Jf2Property::fromString('feed');
+        }
         return $this->properties['type'] ?? null;
     }
 

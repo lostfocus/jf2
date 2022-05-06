@@ -135,12 +135,32 @@ class JsonToObjectTest extends TestCase
 
     /**
      * @throws Exception\Jf2Exception
+     * @noinspection DuplicatedCode
      */
     public function testExample09(): void
     {
         $content = $this->loadExample('jf2/spec-ex-09.json');
         $jf2 = Jf2::fromJsonString($content);
         self::assertCount(5, $jf2);
+        $properties = $jf2->getProperties();
+        self::assertArrayHasKey('children', $properties);
+        self::assertCount(2, $properties['children']);
+        $children = $properties['children']->getValue();
+        self::assertIsArray($children);
+        self::assertInstanceOf(Jf2::class, $children[0]->getValue());
+        self::assertInstanceOf(Jf2::class, $children[1]->getValue());
+    }
+
+    /**
+     * @throws Exception\Jf2Exception
+     * @noinspection DuplicatedCode
+     */
+    public function testExample10(): void
+    {
+        $content = $this->loadExample('jf2/spec-ex-10.json');
+        $jf2 = Jf2::fromJsonString($content);
+        self::assertCount(1, $jf2);
+        self::assertSame('feed', (string)$jf2->getType());
         $properties = $jf2->getProperties();
         self::assertArrayHasKey('children', $properties);
         self::assertCount(2, $properties['children']);
