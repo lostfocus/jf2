@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Lostfocus\Jf2;
 
+use JsonSerializable;
 use Lostfocus\Jf2\Exception\Jf2Exception;
 use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
 use stdClass;
@@ -47,9 +48,30 @@ class Jf2Property implements Jf2PropertyInterface
         return $property;
     }
 
+    public static function fromJf2(Jf2 $value): Jf2PropertyInterface
+    {
+        $property = new self();
+        $property->addValue($value);
+        return $property;
+    }
+
+    /**
+     * @throws Jf2Exception
+     */
     public function jsonSerialize()
     {
-        // TODO: Implement jsonSerialize() method.
+        if (count($this->value) < 1) {
+            return null;
+        }
+        if (count($this->value) === 1) {
+            $onlyValue = $this->value[0];
+            return $this->serializeValue($onlyValue);
+        }
+        $returnArray = [];
+        foreach ($this->value as $key => $value) {
+            $returnArray[$key] = $this->serializeValue($value);
+        }
+        return $returnArray;
     }
 
     /**
@@ -95,5 +117,21 @@ class Jf2Property implements Jf2PropertyInterface
             return $this->value;
         }
         return $this->value[0];
+    }
+
+    /**
+     * @param mixed $value
+     * @return float|int|mixed|string|null
+     * @throws Jf2Exception
+     */
+    private function serializeValue(mixed $value): mixed
+    {
+        if (is_string($value) || is_numeric($value) || ($value === null)) {
+            return $value;
+        }
+        if ($value instanceof JsonSerializable) {
+            return $value->jsonSerialize();
+        }
+        throw new Jf2Exception('Unable to serialize value', Jf2Exception::UNABLE_TO_SERIALIZE_VALUE);
     }
 }

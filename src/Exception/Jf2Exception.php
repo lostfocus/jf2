@@ -15,4 +15,5 @@ class Jf2Exception extends Exception
     public const VIDEO_MUST_HAVE_URL = 6;
     public const UNEXPECTED_TYPE = 7;
     public const CLASS_SHOULD_HAVE_A_TYPE = 8;
+    public const UNABLE_TO_SERIALIZE_VALUE = 9;
 }

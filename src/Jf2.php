@@ -38,38 +38,7 @@ class Jf2 implements JsonSerializable, Stringable, Countable
         $jf2 = new self();
 
         foreach ($json as $key => $value) {
-            if ($key === 'type') {
-                if (!is_string($value)) {
-                    throw new Jf2Exception(
-                        'Type MUST be a single string value only.',
-                        Jf2Exception::TYPE_MUST_BE_STRING
-                    );
-                }
-                $jf2->properties['type'] = Jf2Property::fromString($value);
-            } elseif ($key === 'content') {
-                $jf2->properties[$key] = Jf2Content::fromValue($value);
-            } elseif ($key === 'video') {
-                $jf2->properties[$key] = Jf2Video::fromValue($value);
-            } elseif ($key === 'references') {
-                if (!array_key_exists($key, $jf2->properties)) {
-                    $jf2->properties[$key] = [];
-                }
-                foreach ($value as $refKey => $refValue) {
-                    if (is_array($refValue)) {
-                        $jf2->properties[$key][$refKey] = Jf2Property::fromArray($refValue);
-                    } elseif ($refValue instanceof stdClass) {
-                        $jf2->properties[$key][$refKey] = Jf2Property::fromClass($refValue);
-                    } else {
-                        $jf2->properties[$key][$refKey] = Jf2Property::fromString((string)$refValue);
-                    }
-                }
-            } elseif (is_array($value)) {
-                $jf2->properties[$key] = Jf2Property::fromArray($value);
-            } elseif ($value instanceof stdClass) {
-                $jf2->properties[$key] = Jf2Property::fromClass($value);
-            } else {
-                $jf2->properties[$key] = Jf2Property::fromString((string)$value);
-            }
+            self::insertProperty($jf2, $key, $value);
         }
 
         return $jf2;
@@ -77,7 +46,11 @@ class Jf2 implements JsonSerializable, Stringable, Countable
 
     public function jsonSerialize(): array
     {
-        return [];
+        $array = [];
+        foreach ($this->properties as $key => $property) {
+            $array[$key] = is_array($property) ? $property : $property->jsonSerialize();
+        }
+        return $array;
     }
 
     /**
@@ -114,5 +87,55 @@ class Jf2 implements JsonSerializable, Stringable, Countable
     public function count(): int
     {
         return count($this->properties);
+    }
+
+    /**
+     * @throws Jf2Exception
+     */
+    public static function insertProperty(Jf2 $jf2, string $key, $value): self
+    {
+        if ($key === 'type') {
+            if (!is_string($value)) {
+                throw new Jf2Exception(
+                    'Type MUST be a single string value only.',
+                    Jf2Exception::TYPE_MUST_BE_STRING
+                );
+            }
+            $jf2->properties['type'] = Jf2Property::fromString($value);
+        } elseif ($key === 'content') {
+            $jf2->properties[$key] = Jf2Content::fromValue($value);
+        } elseif ($key === 'video') {
+            $jf2->properties[$key] = Jf2Video::fromValue($value);
+        } elseif ($key === 'references') {
+            if (!array_key_exists($key, $jf2->properties)) {
+                $jf2->properties[$key] = [];
+            }
+            foreach ($value as $refKey => $refValue) {
+                if (is_array($refValue)) {
+                    $jf2->properties[$key][$refKey] = Jf2Property::fromArray($refValue);
+                } elseif ($refValue instanceof stdClass) {
+                    $jf2->properties[$key][$refKey] = Jf2Property::fromClass($refValue);
+                } else {
+                    $jf2->properties[$key][$refKey] = Jf2Property::fromString((string)$refValue);
+                }
+            }
+        } elseif (is_array($value)) {
+            $jf2->properties[$key] = Jf2Property::fromArray($value);
+        } elseif ($value instanceof stdClass) {
+            $jf2->properties[$key] = Jf2Property::fromClass($value);
+        } elseif ($value instanceof self) {
+            $jf2->properties[$key] = Jf2Property::fromJf2($value);
+        } else {
+            $jf2->properties[$key] = Jf2Property::fromString((string)$value);
+        }
+        return $jf2;
+    }
+
+    /**
+     * @throws Jf2Exception
+     */
+    public function addProperty(string $key, $value): self
+    {
+        return static::insertProperty($this, $key, $value);
     }
 }
