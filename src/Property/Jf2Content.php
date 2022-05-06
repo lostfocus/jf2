@@ -1,12 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Lostfocus\Jf2;
+namespace Lostfocus\Jf2\Property;
 
 use Lostfocus\Jf2\Exception\Jf2Exception;
+use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
 use stdClass;
 
-class Jf2Content extends Jf2Property
+class Jf2Content extends AbstractKeyValueProperty
 {
     /**
      * @throws Jf2Exception
@@ -17,8 +18,6 @@ class Jf2Content extends Jf2Property
             return self::fromString($value);
         }
 
-        $content = new self();
-
         if ($value instanceof stdClass) {
             if (!property_exists($value, 'html')) {
                 throw new Jf2Exception(
@@ -26,6 +25,7 @@ class Jf2Content extends Jf2Property
                     Jf2Exception::CONTENT_MUST_HAVE_HTML
                 );
             }
+            $content = new self();
 
             foreach ($value as $key => $item) {
                 $content->addValueWithKey($key, $item);
@@ -36,11 +36,6 @@ class Jf2Content extends Jf2Property
             'Content MUST be a single string or an stdClass.',
             Jf2Exception::CONTENT_MUST_BE_STRING_OR_STDCLASS
         );
-    }
-
-    private function addValueWithKey(string $key, string $item): void
-    {
-        $this->value[$key] = $item;
     }
 
     public function getHtml(): ?string

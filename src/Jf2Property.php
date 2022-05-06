@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Lostfocus\Jf2;
 
 use Lostfocus\Jf2\Exception\Jf2Exception;
+use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
 use stdClass;
 
 class Jf2Property implements Jf2PropertyInterface
@@ -45,10 +46,10 @@ class Jf2Property implements Jf2PropertyInterface
     }
 
     /**
-     * @param array|string|Jf2|null $value
+     * @param array|string|Jf2|Jf2PropertyInterface|null $value
      * @return $this
      */
-    public function addValue(array|string|Jf2|null $value): Jf2PropertyInterface
+    public function addValue(array|string|Jf2|Jf2PropertyInterface|null $value): Jf2PropertyInterface
     {
         if (!in_array($value, $this->value, true)) {
             $this->value[] = $value;
@@ -76,9 +77,9 @@ class Jf2Property implements Jf2PropertyInterface
     }
 
     /**
-     * @return array|string|Jf2|null
+     * @return array|string|Jf2|Jf2PropertyInterface|null
      */
-    public function getValue(): array|string|Jf2|null
+    public function getValue(): array|string|Jf2|Jf2PropertyInterface|null
     {
         if (count($this->value) < 1) {
             return null;

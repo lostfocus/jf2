@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Lostfocus\Jf2;
 
+use Lostfocus\Jf2\Property\Jf2Content;
 use PHPUnit\Framework\TestCase;
 
 class JsonToObjectTest extends TestCase
@@ -67,6 +68,20 @@ class JsonToObjectTest extends TestCase
         self::assertInstanceOf(Jf2Content::class, $content);
         self::assertNotNull($content->getHtml());
         self::assertNotNull($content->getText());
+    }
+
+    /**
+     * @throws Exception\Jf2Exception
+     */
+    public function testExample05(): void
+    {
+        $content = $this->loadExample('jf2/spec-ex-05.json');
+        $jf2 = Jf2::fromJsonString($content);
+        self::assertCount(2, $jf2);
+        self::assertSame('entry', (string)$jf2->getType());
+        $properties = $jf2->getProperties();
+        self::assertArrayHasKey('video', $properties);
+        self::assertCount(3, $properties['video']);
     }
 
     private function loadExample(string $path): string

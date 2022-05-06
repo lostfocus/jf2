@@ -7,6 +7,8 @@ use Countable;
 use JsonException;
 use JsonSerializable;
 use Lostfocus\Jf2\Exception\Jf2Exception;
+use Lostfocus\Jf2\Property\Jf2Content;
+use Lostfocus\Jf2\Property\Jf2Video;
 use stdClass;
 use Stringable;
 
@@ -45,6 +47,8 @@ class Jf2 implements JsonSerializable, Stringable, Countable
                 $jf2->properties['type'] = Jf2Property::fromString($value);
             } elseif ($key === 'content') {
                 $jf2->properties[$key] = Jf2Content::fromValue($value);
+            } elseif ($key === 'video') {
+                $jf2->properties[$key] = Jf2Video::fromValue($value);
             } elseif (is_array($value)) {
                 $jf2->properties[$key] = Jf2Property::fromArray($value);
             } elseif ($value instanceof stdClass) {
