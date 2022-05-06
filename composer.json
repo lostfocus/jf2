@@ -20,12 +20,12 @@
   },
   "autoload": {
     "psr-4": {
-      "lostfocus\\jf2\\": "src"
+      "Lostfocus\\Jf2\\": "src"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "lastfocus\\jf2\\": "tests"
+      "Lostfocus\\Jf2\\": "tests"
     }
   },
   "scripts": {
