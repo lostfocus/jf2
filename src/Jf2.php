@@ -3,12 +3,14 @@ declare(strict_types=1);
 
 namespace Lostfocus\Jf2;
 
+use Countable;
 use JsonException;
 use JsonSerializable;
 use Lostfocus\Jf2\Exception\Jf2Exception;
+use stdClass;
 use Stringable;
 
-class Jf2 implements JsonSerializable, Stringable
+class Jf2 implements JsonSerializable, Stringable, Countable
 {
     /** @var Jf2Property[] */
     private array $properties = [];
@@ -19,7 +21,7 @@ class Jf2 implements JsonSerializable, Stringable
     public static function fromJsonString(string $jsonString): self
     {
         try {
-            return self::fromJsonArray(json_decode($jsonString, true, 512, JSON_THROW_ON_ERROR));
+            return self::fromJsonClass(json_decode($jsonString, false, 512, JSON_THROW_ON_ERROR));
         } catch (JsonException $e) {
             throw new Jf2Exception($e->getMessage(), Jf2Exception::JSON_EXCEPTION, $e);
         }
@@ -28,7 +30,7 @@ class Jf2 implements JsonSerializable, Stringable
     /**
      * @throws Jf2Exception
      */
-    public static function fromJsonArray(array $json): self
+    public static function fromJsonClass(stdClass $json): self
     {
         $jf2 = new self();
 
@@ -41,13 +43,18 @@ class Jf2 implements JsonSerializable, Stringable
                     );
                 }
                 $jf2->properties['type'] = Jf2Property::fromString($value);
+            } elseif ($key === 'content') {
+                $jf2->properties[$key] = Jf2Content::fromValue($value);
+            } elseif (is_array($value)) {
+                $jf2->properties[$key] = Jf2Property::fromArray($value);
+            } elseif ($value instanceof stdClass) {
+                $jf2->properties[$key] = Jf2Property::fromClass($value);
             } else {
-                $jf2->properties[$key] = is_array($value) ? Jf2Property::fromArray($value) : Jf2Property::fromString((string)$value);
+                $jf2->properties[$key] = Jf2Property::fromString((string)$value);
             }
         }
 
         return $jf2;
-
     }
 
     public function jsonSerialize(): array
@@ -81,5 +88,10 @@ class Jf2 implements JsonSerializable, Stringable
     public function getProperties(): array
     {
         return $this->properties;
+    }
+
+    public function count(): int
+    {
+        return count($this->properties);
     }
 }

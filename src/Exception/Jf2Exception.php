@@ -10,4 +10,6 @@ class Jf2Exception extends Exception
     public const JSON_EXCEPTION = 1;
     public const TYPE_MUST_BE_STRING = 2;
     public const UNABLE_TO_CAST_TO_STRING = 3;
+    public const CONTENT_MUST_BE_STRING_OR_STDCLASS = 4;
+    public const CONTENT_MUST_HAVE_HTML = 5;
 }

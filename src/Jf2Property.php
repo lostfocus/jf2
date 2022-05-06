@@ -3,33 +3,38 @@ declare(strict_types=1);
 
 namespace Lostfocus\Jf2;
 
-use Countable;
-use JsonSerializable;
 use Lostfocus\Jf2\Exception\Jf2Exception;
-use Stringable;
+use stdClass;
 
-class Jf2Property implements JsonSerializable, Stringable, Countable
+class Jf2Property implements Jf2PropertyInterface
 {
-    private array $value = [];
+    protected array $value = [];
 
-    public static function fromString(string $value): self
+    public static function fromString(string $value): Jf2PropertyInterface
     {
         return (new self())
             ->addValue($value);
     }
 
+    public static function fromArray(array $value): Jf2PropertyInterface
+    {
+        $property = new self();
+        foreach ($value as $item) {
+            $property->addValue($item);
+        }
+        return $property;
+    }
+
     /**
      * @throws Jf2Exception
      */
-    public static function fromArray(array $value): self
+    public static function fromClass(stdClass $value): Jf2PropertyInterface
     {
         $property = new self();
-        if (array_key_exists('type', $value)) {
-            $property->addValue(Jf2::fromJsonArray($value));
+        if (property_exists($value, 'type')) {
+            $property->addValue(Jf2::fromJsonClass($value));
         } else {
-            foreach ($value as $item) {
-                $property->addValue($item);
-            }
+            var_dump($value);
         }
         return $property;
     }
@@ -43,7 +48,7 @@ class Jf2Property implements JsonSerializable, Stringable, Countable
      * @param array|string|Jf2|null $value
      * @return $this
      */
-    public function addValue(array|string|Jf2|null $value): self
+    public function addValue(array|string|Jf2|null $value): Jf2PropertyInterface
     {
         if (!in_array($value, $this->value, true)) {
             $this->value[] = $value;
