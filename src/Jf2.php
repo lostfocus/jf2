@@ -94,6 +94,20 @@ class Jf2 implements JsonSerializable, Stringable, Countable
      */
     public static function insertProperty(Jf2 $jf2, string $key, $value): self
     {
+        if (
+            array_key_exists($key, $jf2->properties) &&
+            $jf2->properties[$key] instanceof Jf2PropertyInterface
+        ) {
+            if ($key === 'type') {
+                throw new Jf2Exception(
+                    'Type MUST be a single string value only.',
+                    Jf2Exception::TYPE_MUST_BE_STRING
+                );
+            }
+            $jf2->properties[$key]->addValue($value);
+            return $jf2;
+        }
+
         if ($key === 'type') {
             if (!is_string($value)) {
                 throw new Jf2Exception(
