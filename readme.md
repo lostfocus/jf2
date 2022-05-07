@@ -25,7 +25,7 @@ $ composer require lostfocus/jf2
 ``` php
 $entry = new Lostfocus\Jf2\Utility\Entry();
 $entry->setUrl('https://example.com');
-echo json_encode($entry, JSON_PRETTY_PRINT |JSON_THROW_ON_ERROR);
+echo json_encode($entry, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
 ```
 
 ## Testing
