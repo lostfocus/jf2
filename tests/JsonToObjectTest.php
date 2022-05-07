@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Lostfocus\Jf2;
 
 use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
+use Lostfocus\Jf2\Property\Jf2Collection;
 use Lostfocus\Jf2\Property\Jf2Content;
 use PHPUnit\Framework\TestCase;
 
@@ -144,11 +145,13 @@ class JsonToObjectTest extends TestCase
         self::assertCount(5, $jf2);
         $properties = $jf2->getProperties();
         self::assertArrayHasKey('children', $properties);
-        self::assertCount(2, $properties['children']);
-        $children = $properties['children']->getValue();
-        self::assertIsArray($children);
-        self::assertInstanceOf(Jf2::class, $children[0]->getValue());
-        self::assertInstanceOf(Jf2::class, $children[1]->getValue());
+        $children = $properties['children'];
+        self::assertInstanceOf(Jf2Collection::class, $children);
+        self::assertCount(2, $children);
+        foreach ($children as $child) {
+            self::assertInstanceOf(Jf2::class, $child);
+            self::assertInstanceOf(Jf2::class, $child);
+        }
     }
 
     /**
@@ -163,11 +166,13 @@ class JsonToObjectTest extends TestCase
         self::assertSame('feed', (string)$jf2->getType());
         $properties = $jf2->getProperties();
         self::assertArrayHasKey('children', $properties);
-        self::assertCount(2, $properties['children']);
-        $children = $properties['children']->getValue();
-        self::assertIsArray($children);
-        self::assertInstanceOf(Jf2::class, $children[0]->getValue());
-        self::assertInstanceOf(Jf2::class, $children[1]->getValue());
+        $children = $properties['children'];
+        self::assertInstanceOf(Jf2Collection::class, $children);
+        self::assertCount(2, $children);
+        foreach ($children as $child) {
+            self::assertInstanceOf(Jf2::class, $child);
+            self::assertInstanceOf(Jf2::class, $child);
+        }
     }
 
     private function loadExample(string $path): string

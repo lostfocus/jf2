@@ -8,6 +8,7 @@ use JsonException;
 use JsonSerializable;
 use Lostfocus\Jf2\Exception\Jf2Exception;
 use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
+use Lostfocus\Jf2\Property\Jf2Collection;
 use Lostfocus\Jf2\Property\Jf2Content;
 use Lostfocus\Jf2\Property\Jf2Media;
 use stdClass;
@@ -60,6 +61,41 @@ class Jf2 implements JsonSerializable, Stringable, Countable
             );
         }
         $jf2->properties['type'] = Jf2Property::fromString($value);
+        return $jf2;
+    }
+
+    /**
+     * @param Jf2 $jf2
+     * @param array|stdClass|string $value
+     * @return Jf2
+     * @throws Jf2Exception
+     */
+    public static function insertChildren(Jf2 $jf2, array|stdClass|string $value): Jf2
+    {
+        if (!is_array($value)) {
+            throw new Jf2Exception(
+                'Children MUST be an array',
+                Jf2Exception::CHILDREN_MUST_BE_ARRAY
+            );
+        }
+        /*
+         * In case we have an object as an array
+         */
+        if (array_key_exists('type', $value)) {
+            try {
+                $value = [
+                    json_decode(
+                        json_encode($value, JSON_THROW_ON_ERROR),
+                        false,
+                        512,
+                        JSON_THROW_ON_ERROR)
+                ];
+            } catch (JsonException $e) {
+                throw new Jf2Exception($e->getMessage(), Jf2Exception::JSON_EXCEPTION, $e);
+            }
+        }
+
+        $jf2->properties['children'] = Jf2Collection::fromArray($value);
         return $jf2;
     }
 
@@ -124,6 +160,8 @@ class Jf2 implements JsonSerializable, Stringable, Countable
              */
             case 'type':
                 return self::insertType($jf2, $value);
+            case 'children':
+                return self::insertChildren($jf2, $value);
             default:
         }
 
@@ -170,5 +208,23 @@ class Jf2 implements JsonSerializable, Stringable, Countable
     public function addProperty(string $key, $value): self
     {
         return static::insertProperty($this, $key, $value);
+    }
+
+    /**
+     * @return array<Jf2>
+     */
+    public function getChildren(): array
+    {
+        if(
+            !array_key_exists('children', $this->properties) ||
+            !$this->properties['children'] instanceof Jf2Collection
+        ) {
+            return [];
+        }
+        $children = [];
+        foreach($this->properties['children'] as $child) {
+            $children[] = $child;
+        }
+        return $children;
     }
 }

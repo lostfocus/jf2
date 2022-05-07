@@ -16,6 +16,8 @@ class Jf2Test extends TestCase
     {
         $jf2 = (new Jf2())
             ->addProperty('type', 'entry');
+        self::assertCount(1, $jf2);
+        self::assertSame('entry', (string)$jf2->getType());
         $this->expectException(Jf2Exception::class);
         $jf2->addProperty('type', 'entry');
     }
@@ -42,6 +44,25 @@ class Jf2Test extends TestCase
             ->addProperty('type', $type);
     }
 
+    /**
+     * @throws Jf2Exception
+     */
+    public function testAddChildren(): void
+    {
+        $child1 = new stdClass();
+        $child1->type = 'entry';
+        $child2 = new stdClass();
+        $child2->type = 'entry';
+        $jf2 = (new Jf2())
+            ->addProperty('type', 'entry')
+            ->addProperty('children', [
+                $child1, $child2
+            ]);
+        self::assertCount(2, $jf2);
+        self::assertSame('entry', (string)$jf2->getType());
+        $children = $jf2->getChildren();
+        self::assertCount(2, $children);
+    }
 
     /**
      * @throws Exception\Jf2Exception
