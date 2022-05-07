@@ -5,10 +5,16 @@ namespace Lostfocus\Jf2\Property;
 
 use Lostfocus\Jf2\Exception\Jf2Exception;
 use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
+use Lostfocus\Jf2\Jf2Property;
 use stdClass;
 
-class Jf2Content extends AbstractKeyValueProperty
+class Jf2Content extends Jf2Property
 {
+    /**
+     * @var array<string, string>
+     */
+    private array $contentProperties = [];
+
     /**
      * @throws Jf2Exception
      */
@@ -19,32 +25,36 @@ class Jf2Content extends AbstractKeyValueProperty
         }
 
         if ($value instanceof stdClass) {
-            if (!property_exists($value, 'html')) {
-                throw new Jf2Exception(
-                    'Content MUST have an HTML property.',
-                    Jf2Exception::CONTENT_MUST_HAVE_HTML
-                );
-            }
             $content = new self();
 
-            foreach ($value as $key => $item) {
-                $content->addValueWithKey($key, $item);
+            $valueVars = get_object_vars($value);
+            foreach ($valueVars as $key => $valueVar) {
+                $content->contentProperties[$key] = $valueVar;
             }
             return $content;
         }
+
         throw new Jf2Exception(
             'Content MUST be a single string or an stdClass.',
             Jf2Exception::CONTENT_MUST_BE_STRING_OR_STDCLASS
         );
     }
 
+    /**
+     * @return string[]
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->contentProperties;
+    }
+
     public function getHtml(): ?string
     {
-        return $this->value['html'] ?? null;
+        return $this->contentProperties['html'] ?? null;
     }
 
     public function getText(): ?string
     {
-        return $this->value['text'] ?? null;
+        return $this->contentProperties['text'] ?? null;
     }
 }
