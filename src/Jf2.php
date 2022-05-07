@@ -16,7 +16,7 @@ use stdClass;
 class Jf2 implements Jf2Interface
 {
     /** @var array<Jf2PropertyInterface> */
-    private array $properties = [];
+    protected array $properties = [];
 
     public static function fromJsonString(string $jsonString): Jf2Interface
     {

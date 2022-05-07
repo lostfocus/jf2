@@ -10,9 +10,6 @@ use PHPUnit\Framework\TestCase;
 
 class UtilitiesTest extends TestCase
 {
-    /**
-     * @throws Exception\Jf2Exception
-     */
     public function testEntry(): void
     {
         $published = new DateTime();
