@@ -164,10 +164,18 @@ class Jf2 implements JsonSerializable, Stringable, Countable
     }
 
     /**
+     * @param Jf2 $jf2
+     * @param string $key
+     * @param numeric|string|stdClass|array<mixed>|self $value
+     * @return static
      * @throws Jf2Exception
      */
-    public static function insertProperty(Jf2 $jf2, string $key, $value): self
+    public static function insertProperty(Jf2 $jf2, string $key, array|float|int|string|stdClass|self $value): self
     {
+        if(is_int($value) || is_float($value)) {
+            $value = (string)$value;
+        }
+
         /*
          * Handle reserved properties on an object level
          */
