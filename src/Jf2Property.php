@@ -57,9 +57,10 @@ class Jf2Property implements Jf2PropertyInterface
     }
 
     /**
+     * @return mixed
      * @throws Jf2Exception
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         if (count($this->value) < 1) {
             return null;
