@@ -7,7 +7,7 @@ use Lostfocus\Jf2\Exception\Jf2Exception;
 use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
 use stdClass;
 
-class Jf2Video extends AbstractKeyValueProperty
+class Jf2Media extends AbstractKeyValueProperty
 {
 
     /**

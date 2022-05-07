@@ -9,7 +9,7 @@ use JsonSerializable;
 use Lostfocus\Jf2\Exception\Jf2Exception;
 use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
 use Lostfocus\Jf2\Property\Jf2Content;
-use Lostfocus\Jf2\Property\Jf2Video;
+use Lostfocus\Jf2\Property\Jf2Media;
 use stdClass;
 use Stringable;
 
@@ -41,6 +41,25 @@ class Jf2 implements JsonSerializable, Stringable, Countable
             self::insertProperty($jf2, $key, $value);
         }
 
+        return $jf2;
+    }
+
+    /**
+     * @param Jf2 $jf2
+     * @param array|stdClass|string $value
+     * @param bool $update
+     * @return static
+     * @throws Jf2Exception
+     */
+    public static function insertType(Jf2 $jf2, array|stdClass|string $value, bool $update = false): self
+    {
+        if (!is_string($value) || (!$update && array_key_exists('type', $jf2->properties))) {
+            throw new Jf2Exception(
+                'Type MUST be a single string value only.',
+                Jf2Exception::TYPE_MUST_BE_STRING
+            );
+        }
+        $jf2->properties['type'] = Jf2Property::fromString($value);
         return $jf2;
     }
 
@@ -94,32 +113,32 @@ class Jf2 implements JsonSerializable, Stringable, Countable
      */
     public static function insertProperty(Jf2 $jf2, string $key, $value): self
     {
+        /*
+         * Handle reserved properties on an object level
+         */
+        switch ($key) {
+            /*
+             * type defines the object classification. In microformats, this is
+             * presumed to be an h-* class from the microformats2 vocabulary.
+             * Type MUST be a single string value only.
+             */
+            case 'type':
+                return self::insertType($jf2, $value);
+            default:
+        }
+
         if (
             array_key_exists($key, $jf2->properties) &&
             $jf2->properties[$key] instanceof Jf2PropertyInterface
         ) {
-            if ($key === 'type') {
-                throw new Jf2Exception(
-                    'Type MUST be a single string value only.',
-                    Jf2Exception::TYPE_MUST_BE_STRING
-                );
-            }
             $jf2->properties[$key]->addValue($value);
             return $jf2;
         }
 
-        if ($key === 'type') {
-            if (!is_string($value)) {
-                throw new Jf2Exception(
-                    'Type MUST be a single string value only.',
-                    Jf2Exception::TYPE_MUST_BE_STRING
-                );
-            }
-            $jf2->properties['type'] = Jf2Property::fromString($value);
-        } elseif ($key === 'content') {
+        if ($key === 'content') {
             $jf2->properties[$key] = Jf2Content::fromValue($value);
         } elseif ($key === 'video') {
-            $jf2->properties[$key] = Jf2Video::fromValue($value);
+            $jf2->properties[$key] = Jf2Media::fromValue($value);
         } elseif ($key === 'references') {
             if (!array_key_exists($key, $jf2->properties)) {
                 $jf2->properties[$key] = [];
