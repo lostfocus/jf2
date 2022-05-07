@@ -5,6 +5,7 @@ namespace Lostfocus\Jf2;
 
 use JsonSerializable;
 use Lostfocus\Jf2\Exception\Jf2Exception;
+use Lostfocus\Jf2\Interfaces\Jf2Interface;
 use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
 use Lostfocus\Jf2\Property\Jf2Object;
 use stdClass;
@@ -49,7 +50,7 @@ class Jf2Property implements Jf2PropertyInterface
         return $property;
     }
 
-    public static function fromJf2(Jf2 $value): Jf2PropertyInterface
+    public static function fromJf2(Jf2Interface $value): Jf2PropertyInterface
     {
         $property = new self();
         $property->addValue($value);

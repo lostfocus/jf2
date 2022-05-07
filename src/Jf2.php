@@ -3,27 +3,22 @@ declare(strict_types=1);
 
 namespace Lostfocus\Jf2;
 
-use Countable;
 use JsonException;
-use JsonSerializable;
 use Lostfocus\Jf2\Exception\Jf2Exception;
+use Lostfocus\Jf2\Interfaces\Jf2Interface;
 use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
 use Lostfocus\Jf2\Property\Jf2Collection;
 use Lostfocus\Jf2\Property\Jf2Content;
 use Lostfocus\Jf2\Property\Jf2Media;
 use Lostfocus\Jf2\Property\Jf2References;
 use stdClass;
-use Stringable;
 
-class Jf2 implements JsonSerializable, Stringable, Countable
+class Jf2 implements Jf2Interface
 {
     /** @var array<Jf2PropertyInterface> */
     private array $properties = [];
 
-    /**
-     * @throws Jf2Exception
-     */
-    public static function fromJsonString(string $jsonString): self
+    public static function fromJsonString(string $jsonString): Jf2Interface
     {
         try {
             return self::fromJsonClass(json_decode($jsonString, false, 512, JSON_THROW_ON_ERROR));
@@ -32,10 +27,7 @@ class Jf2 implements JsonSerializable, Stringable, Countable
         }
     }
 
-    /**
-     * @throws Jf2Exception
-     */
-    public static function fromJsonClass(stdClass $json): self
+    public static function fromJsonClass(stdClass $json): Jf2Interface
     {
         $jf2 = new self();
 
@@ -163,6 +155,17 @@ class Jf2 implements JsonSerializable, Stringable, Countable
         return $this->properties['type'] ?? null;
     }
 
+    public function hasProperty(string $key): bool
+    {
+        return array_key_exists($key, $this->properties);
+    }
+
+    public function getProperty(string $key): ?Jf2PropertyInterface
+    {
+        return $this->properties[$key] ?? null;
+    }
+
+
     /**
      * @return Jf2Property[]
      */
@@ -185,7 +188,7 @@ class Jf2 implements JsonSerializable, Stringable, Countable
      */
     public static function insertProperty(Jf2 $jf2, string $key, array|float|int|string|stdClass|self $value): self
     {
-        if(is_int($value) || is_float($value)) {
+        if (is_int($value) || is_float($value)) {
             $value = (string)$value;
         }
 
@@ -237,7 +240,7 @@ class Jf2 implements JsonSerializable, Stringable, Countable
             $jf2->properties[$key] = Jf2Property::fromArray($value);
         } elseif ($value instanceof stdClass) {
             $jf2->properties[$key] = Jf2Property::fromClass($value);
-        } elseif ($value instanceof self) {
+        } elseif ($value instanceof Jf2Interface) {
             $jf2->properties[$key] = Jf2Property::fromJf2($value);
         } else {
             $jf2->properties[$key] = Jf2Property::fromString((string)$value);
@@ -245,10 +248,7 @@ class Jf2 implements JsonSerializable, Stringable, Countable
         return $jf2;
     }
 
-    /**
-     * @throws Jf2Exception
-     */
-    public function addProperty(string $key, $value): self
+    public function addProperty(string $key, array|float|int|string|stdClass|Jf2Interface $value): Jf2Interface
     {
         return static::insertProperty($this, $key, $value);
     }
