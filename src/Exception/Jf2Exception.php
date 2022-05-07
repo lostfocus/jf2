@@ -19,4 +19,5 @@ class Jf2Exception extends Exception
     public const CHILDREN_MUST_BE_ARRAY = 10;
     public const PROPERTY_SHOULD_BE_CLASS = 11;
     public const COLLECTION_SHOULD_ONLY_HAVE_OBJECTS = 12;
+    public const REFERENCES_MUST_BE_OBJECT = 13;
 }

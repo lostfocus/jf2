@@ -11,12 +11,13 @@ use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
 use Lostfocus\Jf2\Property\Jf2Collection;
 use Lostfocus\Jf2\Property\Jf2Content;
 use Lostfocus\Jf2\Property\Jf2Media;
+use Lostfocus\Jf2\Property\Jf2References;
 use stdClass;
 use Stringable;
 
 class Jf2 implements JsonSerializable, Stringable, Countable
 {
-    /** @var array<Jf2PropertyInterface|array> */
+    /** @var array<Jf2PropertyInterface> */
     private array $properties = [];
 
     /**
@@ -99,11 +100,29 @@ class Jf2 implements JsonSerializable, Stringable, Countable
         return $jf2;
     }
 
+    /**
+     * @param Jf2 $jf2
+     * @param array|stdClass|string $value
+     * @return Jf2
+     * @throws Jf2Exception
+     */
+    private static function insertReferences(Jf2 $jf2, array|stdClass|string $value): Jf2
+    {
+        if (!$value instanceof stdClass) {
+            throw new Jf2Exception(
+                'References MUST be an object',
+                Jf2Exception::REFERENCES_MUST_BE_OBJECT
+            );
+        }
+        $jf2->properties['references'] = Jf2References::fromClass($value);
+        return $jf2;
+    }
+
     public function jsonSerialize(): array
     {
         $array = [];
         foreach ($this->properties as $key => $property) {
-            $array[$key] = is_array($property) ? $property : $property->jsonSerialize();
+            $array[$key] = $property->jsonSerialize();
         }
         return $array;
     }
@@ -160,8 +179,23 @@ class Jf2 implements JsonSerializable, Stringable, Countable
              */
             case 'type':
                 return self::insertType($jf2, $value);
+            /*
+             * children is a container for all unnamed sub-objects inside an entry.
+             * That is, any sub-object that is not associated to a specific property
+             * of the object. If a children value is set, it MUST be serialized
+             * as an array even if only a single item is present.
+             */
             case 'children':
                 return self::insertChildren($jf2, $value);
+            /*
+             * references is an associative array, serialized as a JSON object,
+             * of all sub-objects inside an object which have "id" defined as an external [URL].
+             * The authoritative source for all objects in this array is always at the URL,
+             * not in this object. If the references property is defined, it MUST be
+             * serialized as an associative array and MUST be present at the top level entry only.
+             */
+            case 'references':
+                return self::insertReferences($jf2, $value);
             default:
         }
 
@@ -177,19 +211,6 @@ class Jf2 implements JsonSerializable, Stringable, Countable
             $jf2->properties[$key] = Jf2Content::fromValue($value);
         } elseif ($key === 'video') {
             $jf2->properties[$key] = Jf2Media::fromValue($value);
-        } elseif ($key === 'references') {
-            if (!array_key_exists($key, $jf2->properties)) {
-                $jf2->properties[$key] = [];
-            }
-            foreach ($value as $refKey => $refValue) {
-                if (is_array($refValue)) {
-                    $jf2->properties[$key][$refKey] = Jf2Property::fromArray($refValue);
-                } elseif ($refValue instanceof stdClass) {
-                    $jf2->properties[$key][$refKey] = Jf2Property::fromClass($refValue);
-                } else {
-                    $jf2->properties[$key][$refKey] = Jf2Property::fromString((string)$refValue);
-                }
-            }
         } elseif (is_array($value)) {
             $jf2->properties[$key] = Jf2Property::fromArray($value);
         } elseif ($value instanceof stdClass) {
@@ -215,14 +236,14 @@ class Jf2 implements JsonSerializable, Stringable, Countable
      */
     public function getChildren(): array
     {
-        if(
+        if (
             !array_key_exists('children', $this->properties) ||
             !$this->properties['children'] instanceof Jf2Collection
         ) {
             return [];
         }
         $children = [];
-        foreach($this->properties['children'] as $child) {
+        foreach ($this->properties['children'] as $child) {
             $children[] = $child;
         }
         return $children;

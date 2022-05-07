@@ -5,6 +5,9 @@ namespace Lostfocus\Jf2\Property;
 
 use Lostfocus\Jf2\Jf2Property;
 
+/**
+ * @deprecated
+ */
 abstract class AbstractKeyValueProperty extends Jf2Property
 {
     protected function addValueWithKey(string $key, string $item): void

@@ -6,6 +6,7 @@ namespace Lostfocus\Jf2;
 use JsonSerializable;
 use Lostfocus\Jf2\Exception\Jf2Exception;
 use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
+use Lostfocus\Jf2\Property\Jf2Object;
 use stdClass;
 
 class Jf2Property implements Jf2PropertyInterface
@@ -43,7 +44,7 @@ class Jf2Property implements Jf2PropertyInterface
         if (!property_exists($value, 'type')) {
             throw new Jf2Exception('Class should have a type', Jf2Exception::CLASS_SHOULD_HAVE_A_TYPE);
         }
-        $property = new self();
+        $property = new Jf2Object();
         $property->addValue(Jf2::fromJsonClass($value));
         return $property;
     }

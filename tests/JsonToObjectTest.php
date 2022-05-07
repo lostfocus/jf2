@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Lostfocus\Jf2;
 
-use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
 use Lostfocus\Jf2\Property\Jf2Collection;
 use Lostfocus\Jf2\Property\Jf2Content;
+use Lostfocus\Jf2\Property\Jf2References;
 use PHPUnit\Framework\TestCase;
 
 class JsonToObjectTest extends TestCase
@@ -97,10 +97,10 @@ class JsonToObjectTest extends TestCase
         self::assertSame('entry', (string)$jf2->getType());
         $properties = $jf2->getProperties();
         self::assertArrayHasKey('references', $properties);
-        self::assertIsArray($properties['references']);
-        self::assertArrayHasKey('http://alice.example.com', $properties['references']);
-        self::assertInstanceOf(Jf2PropertyInterface::class, $properties['references']['http://alice.example.com']);
-        $alice = $properties['references']['http://alice.example.com']->getValue();
+        $references = $properties['references'];
+        self::assertInstanceOf(Jf2References::class, $references);
+        self::assertNotNull($references->getReference('http://alice.example.com'));
+        $alice = $references->getReference('http://alice.example.com');
         self::assertInstanceOf(Jf2::class, $alice);
         self::assertSame('card', (string)$alice->getType());
     }
@@ -121,15 +121,19 @@ class JsonToObjectTest extends TestCase
         self::assertSame('card', (string)$author->getType());
         self::assertArrayHasKey('like-of', $properties);
         self::assertCount(2, $properties['category']);
-        self::assertIsArray($properties['references']);
-        self::assertArrayHasKey('http://bob.example.com', $properties['references']);
-        self::assertInstanceOf(Jf2PropertyInterface::class, $properties['references']['http://bob.example.com']);
-        $bobCard = $properties['references']['http://bob.example.com']->getValue();
+
+        self::assertArrayHasKey('references', $properties);
+        $references = $properties['references'];
+        self::assertInstanceOf(Jf2References::class, $references);
+        self::assertCount(2, $references);
+
+        self::assertNotNull($references->getReference('http://bob.example.com'));
+        $bobCard = $references->getReference('http://bob.example.com');
         self::assertInstanceOf(Jf2::class, $bobCard);
         self::assertSame('card', (string)$bobCard->getType());
-        self::assertArrayHasKey('http://bob.example.com/post/100', $properties['references']);
-        self::assertInstanceOf(Jf2PropertyInterface::class, $properties['references']['http://bob.example.com/post/100']);
-        $bobPost = $properties['references']['http://bob.example.com/post/100']->getValue();
+
+        self::assertNotNull($references->getReference('http://bob.example.com/post/100'));
+        $bobPost = $references->getReference('http://bob.example.com/post/100');
         self::assertInstanceOf(Jf2::class, $bobPost);
         self::assertSame('entry', (string)$bobPost->getType());
     }
