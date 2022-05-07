@@ -118,6 +118,19 @@ class Jf2 implements JsonSerializable, Stringable, Countable
         return $jf2;
     }
 
+    /**
+     * @param Jf2 $jf2
+     * @param string $key
+     * @param array|string|stdClass $value
+     * @return Jf2
+     * @throws Jf2Exception
+     */
+    private static function insertMedia(Jf2 $jf2, string $key, array|string|stdClass $value): Jf2
+    {
+        $jf2->properties[$key] = Jf2Media::fromValue($value);
+        return $jf2;
+    }
+
     public function jsonSerialize(): array
     {
         $array = [];
@@ -204,6 +217,9 @@ class Jf2 implements JsonSerializable, Stringable, Countable
              */
             case 'references':
                 return self::insertReferences($jf2, $value);
+            case 'video':
+            case 'photo':
+                return self::insertMedia($jf2, $key, $value);
             default:
         }
 
@@ -217,8 +233,6 @@ class Jf2 implements JsonSerializable, Stringable, Countable
 
         if ($key === 'content') {
             $jf2->properties[$key] = Jf2Content::fromValue($value);
-        } elseif ($key === 'video') {
-            $jf2->properties[$key] = Jf2Media::fromValue($value);
         } elseif (is_array($value)) {
             $jf2->properties[$key] = Jf2Property::fromArray($value);
         } elseif ($value instanceof stdClass) {
