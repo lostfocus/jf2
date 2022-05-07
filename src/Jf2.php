@@ -131,13 +131,13 @@ class Jf2 implements JsonSerializable, Stringable, Countable
         return $jf2;
     }
 
-    public function jsonSerialize(): array
+    public function jsonSerialize(): stdClass
     {
-        $array = [];
+        $serialized = new stdClass();
         foreach ($this->properties as $key => $property) {
-            $array[$key] = $property->jsonSerialize();
+            $serialized->$key = $property->jsonSerialize();
         }
-        return $array;
+        return $serialized;
     }
 
     /**
