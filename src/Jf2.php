@@ -248,4 +248,20 @@ class Jf2 implements JsonSerializable, Stringable, Countable
         }
         return $children;
     }
+
+    /**
+     * @throws Jf2Exception
+     */
+    public static function addChild(self $jf2, stdClass|array $child): self
+    {
+        if (is_array($child)) {
+            /** @noinspection CallableParameterUseCaseInTypeContextInspection */
+            $child = (object)$child;
+        }
+        if (!array_key_exists('children', $jf2->properties) || !$jf2->properties['children'] instanceof Jf2Collection) {
+            return self::insertChildren($jf2, [$child]);
+        }
+        $jf2->properties['children']->addValue(Jf2Property::fromClass($child));
+        return $jf2;
+    }
 }

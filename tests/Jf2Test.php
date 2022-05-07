@@ -65,6 +65,22 @@ class Jf2Test extends TestCase
     }
 
     /**
+     * @throws Jf2Exception
+     */
+    public function testAddChild(): void
+    {
+        $child = new stdClass();
+        $child->type = 'entry';
+        $jf2 = (new Jf2())
+            ->addProperty('type', 'entry');
+        $jf2 = Jf2::addChild($jf2, $child);
+        self::assertCount(2, $jf2);
+        self::assertSame('entry', (string)$jf2->getType());
+        $children = $jf2->getChildren();
+        self::assertCount(1, $children);
+    }
+
+    /**
      * @throws Exception\Jf2Exception
      */
     public function testAddValues(): void
