@@ -4,7 +4,9 @@
 [![Software License][ico-license]](LICENSE)
 
 A small-ish collection of classes to map/serialize JF2-Json files to typed objects
-and back.
+and back. This is a pretty early version and is likely to break at any 
+time.  
+If you do want to use it, please specify at least the minor version in your `composer.json`
 
 [More infos on JF2](https://www.w3.org/TR/jf2/)
 
