@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection DuplicatedCode */
 declare(strict_types=1);
 
 namespace Lostfocus\Jf2;
@@ -8,6 +8,7 @@ use JsonException;
 use Lostfocus\Jf2\Interfaces\ObjectInterface;
 use Lostfocus\Jf2\Property\Content;
 use Lostfocus\Jf2\Property\Item as ItemProperty;
+use Lostfocus\Jf2\Property\Media;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -97,6 +98,29 @@ class PropertyTest extends TestCase
         self::assertInstanceOf(Content::class, $property);
         self::assertSame($array['html'], $property->getHtml());
         self::assertSame($array['text'], $property->getText());
+        /** @var array $testArray */
+        $testArray = json_decode(json_encode($property, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
+        self::assertCount(count($array), $testArray);
+        foreach ($array as $key => $value) {
+            self::assertArrayHasKey($key, $testArray);
+            self::assertSame($value, $testArray[$key]);
+        }
+    }
+
+    /**
+     * @throws Exception\Jf2Exception
+     * @throws JsonException
+     */
+    public function testMediaArray(): void
+    {
+        $array = [
+            'content-type' => 'video/mp4',
+            'url' => 'sample_h264.mov',
+        ];
+        $property = Property::fromValue($array);
+        self::assertInstanceOf(Media::class, $property);
+        self::assertSame($array['content-type'], $property->getContentType());
+        self::assertSame($array['url'], $property->getUrl());
         /** @var array $testArray */
         $testArray = json_decode(json_encode($property, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
         self::assertCount(count($array), $testArray);

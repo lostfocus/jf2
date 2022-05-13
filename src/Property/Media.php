@@ -36,8 +36,26 @@ class Media extends Property
         if (property_exists($value, 'url')) {
             $media->mediaProperties['url'] = $value->url;
         }
+
         return $media;
     }
 
+    /**
+     * @return string[]
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->mediaProperties;
+    }
+
+    public function getContentType(): ?string
+    {
+        return $this->mediaProperties['content-type'] ?? null;
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->mediaProperties['url'] ?? null;
+    }
 
 }
