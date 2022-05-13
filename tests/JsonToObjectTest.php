@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Lostfocus\Jf2;
 
-use Lostfocus\Jf2\Property\Jf2Collection;
-use Lostfocus\Jf2\Property\Jf2Content;
+use Lostfocus\Jf2\Property\Collection;
+use Lostfocus\Jf2\Property\Content;
 use Lostfocus\Jf2\Property\Jf2References;
 use PHPUnit\Framework\TestCase;
 
@@ -16,16 +16,15 @@ class JsonToObjectTest extends TestCase
     public function testExample01(): void
     {
         $content = $this->loadExample('jf2/spec-ex-01.json');
-        $jf2 = Jf2::fromJsonString($content);
+        $jf2 = Item::fromString($content);
         self::assertCount(7, $jf2);
-        self::assertSame('entry', (string)$jf2->getType());
-        self::assertSame('entry', $jf2->getType()->getValue());
+        self::assertSame('entry', $jf2->getType());
         $properties = $jf2->getProperties();
         self::assertSame('2015-10-20T15:49:00-0700', (string)$properties['published']);
         self::assertSame('http://example.com/post/fsjeuu8372', (string)$properties['url']);
         self::assertCount(1, $properties['author']);
         $author = $properties['author']->getValue();
-        self::assertInstanceOf(Jf2::class, $author);
+        self::assertInstanceOf(Item::class, $author);
         self::assertSame('card', (string)$author->getType());
         self::assertCount(1, $properties['category']);
     }
@@ -36,7 +35,7 @@ class JsonToObjectTest extends TestCase
     public function testExample02(): void
     {
         $content = $this->loadExample('jf2/spec-ex-02.json');
-        $jf2 = Jf2::fromJsonString($content);
+        $jf2 = Item::fromString($content);
         self::assertCount(6, $jf2);
         self::assertSame('entry', (string)$jf2->getType());
         $properties = $jf2->getProperties();
@@ -50,7 +49,7 @@ class JsonToObjectTest extends TestCase
     public function testExample03(): void
     {
         $content = $this->loadExample('jf2/spec-ex-03.json');
-        $jf2 = Jf2::fromJsonString($content);
+        $jf2 = Item::fromString($content);
         self::assertCount(4, $jf2);
         self::assertSame('card', (string)$jf2->getType());
     }
@@ -61,13 +60,13 @@ class JsonToObjectTest extends TestCase
     public function testExample04(): void
     {
         $content = $this->loadExample('jf2/spec-ex-04.json');
-        $jf2 = Jf2::fromJsonString($content);
+        $jf2 = Item::fromString($content);
         self::assertCount(2, $jf2);
         self::assertSame('entry', (string)$jf2->getType());
         $properties = $jf2->getProperties();
         self::assertArrayHasKey('content', $properties);
         $content = $properties['content'];
-        self::assertInstanceOf(Jf2Content::class, $content);
+        self::assertInstanceOf(Content::class, $content);
         self::assertNotNull($content->getHtml());
         self::assertNotNull($content->getText());
     }
@@ -78,7 +77,7 @@ class JsonToObjectTest extends TestCase
     public function testExample05(): void
     {
         $content = $this->loadExample('jf2/spec-ex-05.json');
-        $jf2 = Jf2::fromJsonString($content);
+        $jf2 = Item::fromString($content);
         self::assertCount(2, $jf2);
         self::assertSame('entry', (string)$jf2->getType());
         $properties = $jf2->getProperties();
@@ -88,11 +87,12 @@ class JsonToObjectTest extends TestCase
 
     /**
      * @throws Exception\Jf2Exception
+     * @noinspection DuplicatedCode
      */
     public function testExample07(): void
     {
         $content = $this->loadExample('jf2/spec-ex-07.json');
-        $jf2 = Jf2::fromJsonString($content);
+        $jf2 = Item::fromString($content);
         self::assertCount(8, $jf2);
         self::assertSame('entry', (string)$jf2->getType());
         $properties = $jf2->getProperties();
@@ -101,23 +101,24 @@ class JsonToObjectTest extends TestCase
         self::assertInstanceOf(Jf2References::class, $references);
         self::assertNotNull($references->getReference('http://alice.example.com'));
         $alice = $references->getReference('http://alice.example.com');
-        self::assertInstanceOf(Jf2::class, $alice);
+        self::assertInstanceOf(Item::class, $alice);
         self::assertSame('card', (string)$alice->getType());
     }
 
     /**
      * @throws Exception\Jf2Exception
+     * @noinspection DuplicatedCode
      */
     public function testExample08(): void
     {
         $content = $this->loadExample('jf2/spec-ex-08.json');
-        $jf2 = Jf2::fromJsonString($content);
+        $jf2 = Item::fromString($content);
         self::assertCount(7, $jf2);
         self::assertSame('entry', (string)$jf2->getType());
         $properties = $jf2->getProperties();
         self::assertCount(1, $properties['author']);
         $author = $properties['author']->getValue();
-        self::assertInstanceOf(Jf2::class, $author);
+        self::assertInstanceOf(Item::class, $author);
         self::assertSame('card', (string)$author->getType());
         self::assertArrayHasKey('like-of', $properties);
         self::assertCount(2, $properties['category']);
@@ -129,12 +130,12 @@ class JsonToObjectTest extends TestCase
 
         self::assertNotNull($references->getReference('http://bob.example.com'));
         $bobCard = $references->getReference('http://bob.example.com');
-        self::assertInstanceOf(Jf2::class, $bobCard);
+        self::assertInstanceOf(Item::class, $bobCard);
         self::assertSame('card', (string)$bobCard->getType());
 
         self::assertNotNull($references->getReference('http://bob.example.com/post/100'));
         $bobPost = $references->getReference('http://bob.example.com/post/100');
-        self::assertInstanceOf(Jf2::class, $bobPost);
+        self::assertInstanceOf(Item::class, $bobPost);
         self::assertSame('entry', (string)$bobPost->getType());
     }
 
@@ -145,16 +146,16 @@ class JsonToObjectTest extends TestCase
     public function testExample09(): void
     {
         $content = $this->loadExample('jf2/spec-ex-09.json');
-        $jf2 = Jf2::fromJsonString($content);
+        $jf2 = Item::fromString($content);
         self::assertCount(5, $jf2);
         $properties = $jf2->getProperties();
         self::assertArrayHasKey('children', $properties);
         $children = $properties['children'];
-        self::assertInstanceOf(Jf2Collection::class, $children);
+        self::assertInstanceOf(Collection::class, $children);
         self::assertCount(2, $children);
         foreach ($children as $child) {
-            self::assertInstanceOf(Jf2::class, $child);
-            self::assertInstanceOf(Jf2::class, $child);
+            self::assertInstanceOf(Item::class, $child);
+            self::assertInstanceOf(Item::class, $child);
         }
     }
 
@@ -165,17 +166,17 @@ class JsonToObjectTest extends TestCase
     public function testExample10(): void
     {
         $content = $this->loadExample('jf2/spec-ex-10.json');
-        $jf2 = Jf2::fromJsonString($content);
+        $jf2 = Item::fromString($content);
         self::assertCount(1, $jf2);
         self::assertSame('feed', (string)$jf2->getType());
         $properties = $jf2->getProperties();
         self::assertArrayHasKey('children', $properties);
         $children = $properties['children'];
-        self::assertInstanceOf(Jf2Collection::class, $children);
+        self::assertInstanceOf(Collection::class, $children);
         self::assertCount(2, $children);
         foreach ($children as $child) {
-            self::assertInstanceOf(Jf2::class, $child);
-            self::assertInstanceOf(Jf2::class, $child);
+            self::assertInstanceOf(Item::class, $child);
+            self::assertInstanceOf(Item::class, $child);
         }
     }
 

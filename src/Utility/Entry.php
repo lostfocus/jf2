@@ -5,20 +5,20 @@ namespace Lostfocus\Jf2\Utility;
 
 use DateTime;
 use DateTimeInterface;
-use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
-use Lostfocus\Jf2\Jf2;
-use Lostfocus\Jf2\Jf2Property;
+use Lostfocus\Jf2\Interfaces\PropertyInterface;
+use Lostfocus\Jf2\Item;
+use Lostfocus\Jf2\Property;
 
-class Entry extends Jf2
+class Entry extends Item
 {
     public function __construct()
     {
-        $this->properties['type'] = Jf2Property::fromString('entry');
+        $this->properties['type'] = Property::fromString('entry');
     }
 
     public function setPublished(DateTime $published): self
     {
-        $this->properties['published'] = Jf2Property::fromString($published->format('c'));
+        $this->properties['published'] = Property::fromString($published->format('c'));
         return $this;
     }
 
@@ -33,13 +33,13 @@ class Entry extends Jf2
 
     public function setUrl(string $url): self
     {
-        $this->properties['url'] = Jf2Property::fromString($url);
+        $this->properties['url'] = Property::fromString($url);
         return $this;
     }
 
     public function getUrl(): ?string
     {
         $url = $this->getProperty('url');
-        return ($url instanceof Jf2PropertyInterface) ? (string)$url->getValue() : null;
+        return ($url instanceof PropertyInterface) ? (string)$url->getValue() : null;
     }
 }

@@ -4,17 +4,17 @@ declare(strict_types=1);
 namespace Lostfocus\Jf2\Property;
 
 use Lostfocus\Jf2\Exception\Jf2Exception;
-use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
-use Lostfocus\Jf2\Jf2;
-use Lostfocus\Jf2\Jf2Property;
+use Lostfocus\Jf2\Interfaces\PropertyInterface;
+use Lostfocus\Jf2\Item;
+use Lostfocus\Jf2\Property;
 use stdClass;
 
-class Jf2References extends Jf2Property
+class Jf2References extends Property
 {
-    /** @var Jf2PropertyInterface[] */
+    /** @var PropertyInterface[] */
     private array $references = [];
 
-    public static function fromClass(stdClass $value): Jf2PropertyInterface
+    public static function fromClass(stdClass $value): PropertyInterface
     {
         $property = new self();
         $objectVars = get_object_vars($value);
@@ -40,10 +40,10 @@ class Jf2References extends Jf2Property
 
     /**
      * @param $key
-     * @return Jf2|null
+     * @return Object|null
      * @throws Jf2Exception
      */
-    public function getReference($key): ?Jf2
+    public function getReference($key): ?Item
     {
         if (!array_key_exists($key, $this->references)) {
             return null;

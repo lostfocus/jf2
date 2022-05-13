@@ -21,13 +21,13 @@ class ObjectToJsonTest extends TestCase
             JSON_THROW_ON_ERROR
         );
 
-        $author = (new Jf2())
+        $author = (new Item())
             ->addProperty('type', 'card')
             ->addProperty('name', 'Alice')
             ->addProperty('url', 'http://alice.example.com')
             ->addProperty('photo', 'http://alice.example.com/photo.jpg');
 
-        $jf2 = (new Jf2())
+        $jf2 = (new Item())
             ->addProperty('type', 'entry')
             ->addProperty('published', '2015-10-20T15:49:00-0700')
             ->addProperty('url', 'http://example.com/post/fsjeuu8372')
@@ -144,7 +144,7 @@ class ObjectToJsonTest extends TestCase
     {
         $content = $this->loadExample($path);
         $testArray = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
-        $jf2 = Jf2::fromJsonString($content);
+        $jf2 = Item::fromJsonString($content);
         $jf2Array = json_decode(
             json_encode($jf2, JSON_THROW_ON_ERROR),
             true,

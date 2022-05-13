@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace Lostfocus\Jf2\Property;
 
 use Lostfocus\Jf2\Exception\Jf2Exception;
-use Lostfocus\Jf2\Interfaces\Jf2PropertyInterface;
-use Lostfocus\Jf2\Jf2Property;
+use Lostfocus\Jf2\Interfaces\PropertyInterface;
+use Lostfocus\Jf2\Property;
 use stdClass;
 
-class Jf2Content extends Jf2Property
+class Content extends Property
 {
     /**
      * @var array<string, string>
@@ -18,7 +18,7 @@ class Jf2Content extends Jf2Property
     /**
      * @throws Jf2Exception
      */
-    public static function fromValue($value): Jf2PropertyInterface
+    public static function fromValue($value): PropertyInterface
     {
         if (is_string($value)) {
             return self::fromString($value);
