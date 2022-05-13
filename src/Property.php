@@ -7,6 +7,7 @@ use JsonSerializable;
 use Lostfocus\Jf2\Exception\Jf2Exception;
 use Lostfocus\Jf2\Interfaces\ObjectInterface;
 use Lostfocus\Jf2\Interfaces\PropertyInterface;
+use Lostfocus\Jf2\Property\Item as ItemProperty;
 use Lostfocus\Jf2\Property\Media;
 use RuntimeException;
 use stdClass;
@@ -81,7 +82,7 @@ class Property implements PropertyInterface
          * This is an item
          */
         if (array_key_exists('type', $value)) {
-            return (new self())
+            return (new ItemProperty())
                 ->addValue(Item::fromArray($value));
         }
 
