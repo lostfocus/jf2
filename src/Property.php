@@ -186,9 +186,20 @@ class Property implements PropertyInterface
         throw new RuntimeException('oh no');
     }
 
+    /**
+     * @throws Jf2Exception
+     */
     public function replaceValue(PropertyInterface|array|string|stdClass|ObjectInterface $value): PropertyInterface
     {
-        throw new RuntimeException('oh no');
+        $replacement = self::fromValue($value);
+        $replacementValue = $replacement->getValue();
+        if (is_array($replacementValue)) {
+            $this->value = $replacementValue;
+        } else {
+            $this->value = [$replacementValue];
+        }
+
+        return $this;
     }
 
     public function getValue(): string|array|stdClass|ObjectInterface|PropertyInterface|null

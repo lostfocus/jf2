@@ -129,4 +129,22 @@ class PropertyTest extends TestCase
             self::assertSame($value, $testArray[$key]);
         }
     }
+
+    /**
+     * @return void
+     * @throws Exception\Jf2Exception
+     */
+    public function testReplaceStringProperty(): void
+    {
+        $stringValue = 'test';
+        $property = Property::fromValue($stringValue);
+        self::assertInstanceOf(Property::class, $property);
+        self::assertSame($stringValue, (string)$property);
+        self::assertSame($stringValue, $property->getValue());
+        $newStringValue = 'new';
+        $property->replaceValue($newStringValue);
+        self::assertInstanceOf(Property::class, $property);
+        self::assertSame($newStringValue, (string)$property);
+        self::assertSame($newStringValue, $property->getValue());
+    }
 }
