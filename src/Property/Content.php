@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Lostfocus\Jf2\Property;
 
+use JsonException;
 use Lostfocus\Jf2\Exception\Jf2Exception;
 use Lostfocus\Jf2\Interfaces\PropertyInterface;
 use Lostfocus\Jf2\Property;
@@ -15,30 +16,24 @@ class Content extends Property
      */
     private array $contentProperties = [];
 
-    /**
-     * @throws Jf2Exception
-     */
-    public static function fromValue($value): PropertyInterface
+    public static function fromClass(stdClass $value): PropertyInterface
     {
-        if (is_string($value)) {
-            return self::fromString($value);
+        try {
+            return self::fromArray(
+                json_decode(json_encode($value, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR)
+            );
+        } catch (JsonException $e) {
+            throw new Jf2Exception($e->getMessage(), Jf2Exception::JSON_EXCEPTION, $e);
         }
-
-        if ($value instanceof stdClass) {
-            $content = new self();
-
-            $valueVars = get_object_vars($value);
-            foreach ($valueVars as $key => $valueVar) {
-                $content->contentProperties[$key] = $valueVar;
-            }
-            return $content;
-        }
-
-        throw new Jf2Exception(
-            'Content MUST be a single string or an stdClass.',
-            Jf2Exception::CONTENT_MUST_BE_STRING_OR_STDCLASS
-        );
     }
+
+    public static function fromArray(array $value): PropertyInterface
+    {
+        $content = new self();
+        $content->contentProperties = $value;
+        return $content;
+    }
+
 
     /**
      * @return string[]

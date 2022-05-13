@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Lostfocus\Jf2\Property;
 
+use JsonException;
+use Lostfocus\Jf2\Exception\Jf2Exception;
 use Lostfocus\Jf2\Interfaces\PropertyInterface;
 use Lostfocus\Jf2\Property;
 use stdClass;
@@ -13,6 +15,17 @@ class Media extends Property
      * @var array<string, string>
      */
     private array $mediaProperties = [];
+
+    public static function fromArray(array $value): PropertyInterface
+    {
+        try {
+            return self::fromClass(
+                json_decode(json_encode($value, JSON_THROW_ON_ERROR), false, 512, JSON_THROW_ON_ERROR)
+            );
+        } catch (JsonException $e) {
+            throw new Jf2Exception($e->getMessage(), Jf2Exception::JSON_EXCEPTION, $e);
+        }
+    }
 
     public static function fromClass(stdClass $value): PropertyInterface
     {

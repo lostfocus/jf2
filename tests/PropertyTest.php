@@ -6,13 +6,14 @@ namespace Lostfocus\Jf2;
 
 use JsonException;
 use Lostfocus\Jf2\Interfaces\ObjectInterface;
+use Lostfocus\Jf2\Property\Content;
 use Lostfocus\Jf2\Property\Item as ItemProperty;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @group dataobjects
+ * @group property
  */
-class BasicDataObjectTest extends TestCase
+class PropertyTest extends TestCase
 {
     /**
      * @throws Exception\Jf2Exception
@@ -33,10 +34,10 @@ class BasicDataObjectTest extends TestCase
     public function testCardAsArray(): void
     {
         $card = [
-            "type" => "card",
-            "name" => "Alice",
-            "url" => "http://alice.example.com",
-            "photo" => "http://alice.example.com/photo.jpg",
+            'type' => 'card',
+            'name' => 'Alice',
+            'url' => 'http://alice.example.com',
+            'photo' => 'http://alice.example.com/photo.jpg',
         ];
         $property = Property::fromValue($card);
         self::assertInstanceOf(ItemProperty::class, $property);
@@ -55,9 +56,53 @@ class BasicDataObjectTest extends TestCase
         self::assertCount(4, $value);
         /** @var array $testCard */
         $testCard = json_decode(json_encode($property, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
+        self::assertCount(count($card), $testCard);
         foreach ($card as $key => $value) {
             self::assertArrayHasKey($key, $testCard);
             self::assertSame($value, $testCard[$key]);
+        }
+    }
+
+    /**
+     * @return void
+     * @throws Exception\Jf2Exception
+     * @throws JsonException
+     */
+    public function testStringArray(): void
+    {
+        $array = ['Likes', 'Posts'];
+        $property = Property::fromValue($array);
+        self::assertInstanceOf(Property::class, $property);
+        self::assertCount(2, $property);
+        /** @var array $testArray */
+        $testArray = json_decode(json_encode($property, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
+        self::assertCount(count($array), $testArray);
+        foreach ($array as $key => $value) {
+            self::assertArrayHasKey($key, $testArray);
+            self::assertSame($value, $testArray[$key]);
+        }
+    }
+
+    /**
+     * @throws Exception\Jf2Exception
+     * @throws JsonException
+     */
+    public function testContentArray(): void
+    {
+        $array = [
+            'html' => '<p>Hello World</p>',
+            'text' => 'Hello World',
+        ];
+        $property = Property::fromValue($array);
+        self::assertInstanceOf(Content::class, $property);
+        self::assertSame($array['html'], $property->getHtml());
+        self::assertSame($array['text'], $property->getText());
+        /** @var array $testArray */
+        $testArray = json_decode(json_encode($property, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
+        self::assertCount(count($array), $testArray);
+        foreach ($array as $key => $value) {
+            self::assertArrayHasKey($key, $testArray);
+            self::assertSame($value, $testArray[$key]);
         }
     }
 }

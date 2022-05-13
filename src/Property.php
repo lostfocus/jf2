@@ -7,6 +7,7 @@ use JsonSerializable;
 use Lostfocus\Jf2\Exception\Jf2Exception;
 use Lostfocus\Jf2\Interfaces\ObjectInterface;
 use Lostfocus\Jf2\Interfaces\PropertyInterface;
+use Lostfocus\Jf2\Property\Content;
 use Lostfocus\Jf2\Property\Item as ItemProperty;
 use Lostfocus\Jf2\Property\Media;
 use RuntimeException;
@@ -86,6 +87,20 @@ class Property implements PropertyInterface
                 ->addValue(Item::fromArray($value));
         }
 
+        /**
+         * This is a media property
+         */
+        if (array_key_exists('content-type', $value)) {
+            return Media::fromArray($value);
+        }
+
+        /**
+         * This is a content property
+         */
+        if (array_key_exists('html', $value)) {
+            return Content::fromArray($value);
+        }
+
         $property = new self();
         foreach ($value as $item) {
             $property->addValue(self::fromValue($item));
@@ -113,6 +128,14 @@ class Property implements PropertyInterface
         if (property_exists($value, 'content-type')) {
             return Media::fromClass($value);
         }
+
+        /**
+         * This is a content property
+         */
+        if (property_exists($value, 'html')) {
+            return Content::fromClass($value);
+        }
+
         throw new RuntimeException('oh no');
     }
 
