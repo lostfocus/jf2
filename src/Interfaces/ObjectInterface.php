@@ -9,11 +9,24 @@ use JsonSerializable;
 use stdClass;
 use Stringable;
 
+/**
+ * @extends Iterator<string, PropertyInterface>
+ */
 interface ObjectInterface extends JsonSerializable, Stringable, Countable, Iterator
 {
     public static function fromString(string $value): self;
+
+    /**
+     * @param  array<mixed>  $value
+     * @return static
+     */
     public static function fromArray(array $value): self;
     public static function fromClass(stdClass $value): self;
+
+    /**
+     * @param  string|array<mixed>|stdClass  $value
+     * @return static
+     */
     public static function fromValue(string|array|stdClass $value): self;
 
     public function addProperty(string $key, PropertyInterface $value): self;

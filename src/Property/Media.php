@@ -16,6 +16,11 @@ class Media extends Property
      */
     private array $mediaProperties = [];
 
+    /**
+     * @param  array<string, mixed> $value
+     * @return PropertyInterface
+     * @throws Jf2Exception
+     */
     public static function fromArray(array $value): PropertyInterface
     {
         try {

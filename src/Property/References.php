@@ -8,6 +8,7 @@ use Lostfocus\Jf2\Exception\Jf2Exception;
 use Lostfocus\Jf2\Interfaces\ObjectInterface;
 use Lostfocus\Jf2\Interfaces\PropertyInterface;
 use Lostfocus\Jf2\Property;
+use Lostfocus\Jf2\Item;
 use stdClass;
 
 class References extends Property
@@ -15,14 +16,16 @@ class References extends Property
     /** @var array<string, ObjectInterface> */
     private array $references = [];
 
+    /**
+     * @param  array<string, mixed> $value
+     * @return PropertyInterface
+     * @throws Jf2Exception
+     */
     public static function fromArray(array $value): PropertyInterface
     {
         $references = new self();
         foreach ($value as $key => $itemContent) {
-            $item = Property::fromValue($itemContent);
-            if ($item instanceof Item) {
-                $references->references[$key] = $item->getValue();
-            }
+            $references->references[$key] = Item::fromValue($itemContent);
         }
 
         return $references;
@@ -40,6 +43,8 @@ class References extends Property
     }
 
     /**
+     * @param  array<mixed>|string|stdClass|ObjectInterface  $value
+     * @return PropertyInterface
      * @throws Jf2Exception
      */
     public static function fromValue(array|string|stdClass|ObjectInterface $value): PropertyInterface
@@ -54,11 +59,15 @@ class References extends Property
         return parent::fromValue($value);
     }
 
-    public function getReference($key): ?ObjectInterface
+    public function getReference(string $key): ?ObjectInterface
     {
         return $this->references[$key] ?? null;
     }
 
+    /**
+     * @return array<mixed>|null
+     * @throws Jf2Exception
+     */
     public function jsonSerialize(): ?array
     {
         if (count($this->references) < 1) {

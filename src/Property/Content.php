@@ -27,6 +27,10 @@ class Content extends Property
         }
     }
 
+    /**
+     * @param  array<string, string>  $value
+     * @return PropertyInterface
+     */
     public static function fromArray(array $value): PropertyInterface
     {
         $content = new self();

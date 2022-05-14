@@ -14,6 +14,9 @@ use stdClass;
 
 class Property implements PropertyInterface
 {
+    /**
+     * @var array<mixed>
+     */
     protected array $value = [];
     protected int $position = 0;
 
@@ -77,6 +80,8 @@ class Property implements PropertyInterface
     }
 
     /**
+     * @param  array<mixed>  $value
+     * @return PropertyInterface
      * @throws Jf2Exception
      */
     public static function fromArray(array $value): PropertyInterface
@@ -145,7 +150,7 @@ class Property implements PropertyInterface
     }
 
     /**
-     * @param  array|string|stdClass|ObjectInterface  $value
+     * @param  array<mixed>|string|stdClass|ObjectInterface  $value
      * @return PropertyInterface
      * @throws Jf2Exception
      */
@@ -167,6 +172,8 @@ class Property implements PropertyInterface
 
 
     /**
+     * @param  PropertyInterface|array<mixed>|string|stdClass|ObjectInterface  $value
+     * @return PropertyInterface
      * @throws Jf2Exception
      */
     public function addValue(PropertyInterface|array|string|stdClass|ObjectInterface $value): PropertyInterface
@@ -197,12 +204,18 @@ class Property implements PropertyInterface
     }
 
     /**
+     * @param  PropertyInterface|array<mixed>|string|stdClass|ObjectInterface  $value
+     * @return PropertyInterface
      * @throws Jf2Exception
      */
     public function replaceValue(PropertyInterface|array|string|stdClass|ObjectInterface $value): PropertyInterface
     {
-        $replacement = self::fromValue($value);
-        $replacementValue = $replacement->getValue();
+        if($value instanceof PropertyInterface) {
+            $replacementValue = $value->getValue();
+        } else {
+            $replacement = self::fromValue($value);
+            $replacementValue = $replacement->getValue();
+        }
         if (is_array($replacementValue)) {
             $this->value = $replacementValue;
         } else {
@@ -212,6 +225,9 @@ class Property implements PropertyInterface
         return $this;
     }
 
+    /**
+     * @return string|array<mixed>|stdClass|ObjectInterface|PropertyInterface|null
+     */
     public function getValue(): string|array|stdClass|ObjectInterface|PropertyInterface|null
     {
         if (count($this->value) < 1) {

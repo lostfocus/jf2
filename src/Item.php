@@ -22,7 +22,9 @@ class Item implements ObjectInterface
             return null;
         }
 
-        return $this->properties[$this->position];
+        $keys = array_keys($this->properties);
+
+        return $this->properties[$keys[$this->position]];
     }
 
     public function next(): void
@@ -30,14 +32,18 @@ class Item implements ObjectInterface
         ++$this->position;
     }
 
-    public function key(): int
+    public function key(): string
     {
-        return $this->position;
+        $keys = array_keys($this->properties);
+
+        return $keys[$this->position];
     }
 
     public function valid(): bool
     {
-        return isset($this->properties[$this->position]);
+        $keys = array_keys($this->properties);
+
+        return isset($this->properties[$keys[$this->position]]);
     }
 
     public function rewind(): void
@@ -78,7 +84,7 @@ class Item implements ObjectInterface
     }
 
     /**
-     * @param  array  $value
+     * @param  array<mixed>  $value
      * @return ObjectInterface
      * @throws Jf2Exception
      */
@@ -119,7 +125,7 @@ class Item implements ObjectInterface
     }
 
     /**
-     * @param  array|string|stdClass  $value
+     * @param  array<mixed>|string|stdClass  $value
      * @return ObjectInterface
      * @throws Jf2Exception
      */
@@ -220,7 +226,10 @@ class Item implements ObjectInterface
     private function addChildren(PropertyInterface $value): self
     {
         if (array_key_exists('children', $this->properties)) {
-            $this->properties['children']->addValue($value->getValue());
+            $propertyValue = $value->getValue();
+            if ($propertyValue !== null) {
+                $this->properties['children']->addValue($propertyValue);
+            }
         } else {
             $this->properties['children'] = $value;
         }
@@ -253,7 +262,7 @@ class Item implements ObjectInterface
             return (string)$this->properties['type'];
         }
 
-        if(array_key_exists('children', $this->properties)) {
+        if (array_key_exists('children', $this->properties)) {
             return 'feed';
         }
 
