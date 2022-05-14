@@ -3,9 +3,8 @@ declare(strict_types=1);
 
 namespace Lostfocus\Jf2;
 
-use Lostfocus\Jf2\Property\Collection;
 use Lostfocus\Jf2\Property\Content;
-use Lostfocus\Jf2\Property\Jf2References;
+use Lostfocus\Jf2\Property\References;
 use PHPUnit\Framework\TestCase;
 
 class JsonToObjectTest extends TestCase
@@ -98,7 +97,7 @@ class JsonToObjectTest extends TestCase
         $properties = $jf2->getProperties();
         self::assertArrayHasKey('references', $properties);
         $references = $properties['references'];
-        self::assertInstanceOf(Jf2References::class, $references);
+        self::assertInstanceOf(References::class, $references);
         self::assertNotNull($references->getReference('http://alice.example.com'));
         $alice = $references->getReference('http://alice.example.com');
         self::assertInstanceOf(Item::class, $alice);
@@ -125,7 +124,7 @@ class JsonToObjectTest extends TestCase
 
         self::assertArrayHasKey('references', $properties);
         $references = $properties['references'];
-        self::assertInstanceOf(Jf2References::class, $references);
+        self::assertInstanceOf(References::class, $references);
         self::assertCount(2, $references);
 
         self::assertNotNull($references->getReference('http://bob.example.com'));
@@ -151,7 +150,6 @@ class JsonToObjectTest extends TestCase
         $properties = $jf2->getProperties();
         self::assertArrayHasKey('children', $properties);
         $children = $properties['children'];
-        self::assertInstanceOf(Collection::class, $children);
         self::assertCount(2, $children);
         foreach ($children as $child) {
             self::assertInstanceOf(Item::class, $child);
@@ -168,11 +166,10 @@ class JsonToObjectTest extends TestCase
         $content = $this->loadExample('jf2/spec-ex-10.json');
         $jf2 = Item::fromString($content);
         self::assertCount(1, $jf2);
-        self::assertSame('feed', (string)$jf2->getType());
+        self::assertSame('feed', $jf2->getType());
         $properties = $jf2->getProperties();
         self::assertArrayHasKey('children', $properties);
         $children = $properties['children'];
-        self::assertInstanceOf(Collection::class, $children);
         self::assertCount(2, $children);
         foreach ($children as $child) {
             self::assertInstanceOf(Item::class, $child);

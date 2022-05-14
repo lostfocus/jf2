@@ -7,6 +7,7 @@ use JsonException;
 use Lostfocus\Jf2\Exception\Jf2Exception;
 use Lostfocus\Jf2\Interfaces\ObjectInterface;
 use Lostfocus\Jf2\Interfaces\PropertyInterface;
+use Lostfocus\Jf2\Property\References;
 use stdClass;
 
 class Item implements ObjectInterface
@@ -107,7 +108,11 @@ class Item implements ObjectInterface
         $objectVars = get_object_vars($value);
 
         foreach ($objectVars as $objectKey => $objectValue) {
-            $item->addProperty($objectKey, Property::fromValue($objectValue));
+            $property = match ($objectKey) {
+                'references' => References::fromValue($objectValue),
+                default => Property::fromValue($objectValue),
+            };
+            $item->addProperty($objectKey, $property);
         }
 
         return $item;
@@ -246,6 +251,10 @@ class Item implements ObjectInterface
     {
         if (array_key_exists('type', $this->properties)) {
             return (string)$this->properties['type'];
+        }
+
+        if(array_key_exists('children', $this->properties)) {
+            return 'feed';
         }
 
         return null;

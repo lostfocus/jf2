@@ -22,19 +22,19 @@ class ObjectToJsonTest extends TestCase
         );
 
         $author = (new Item())
-            ->addProperty('type', 'card')
-            ->addProperty('name', 'Alice')
-            ->addProperty('url', 'http://alice.example.com')
-            ->addProperty('photo', 'http://alice.example.com/photo.jpg');
+            ->addProperty('type', Property::fromValue('card'))
+            ->addProperty('name', Property::fromValue('Alice'))
+            ->addProperty('url', Property::fromValue('http://alice.example.com'))
+            ->addProperty('photo', Property::fromValue('http://alice.example.com/photo.jpg'));
 
         $jf2 = (new Item())
-            ->addProperty('type', 'entry')
-            ->addProperty('published', '2015-10-20T15:49:00-0700')
-            ->addProperty('url', 'http://example.com/post/fsjeuu8372')
-            ->addProperty('author', $author)
-            ->addProperty('name', 'Hello World')
-            ->addProperty('content', 'This is a blog post')
-            ->addProperty('category', 'Posts')
+            ->addProperty('type',Property::fromValue( 'entry'))
+            ->addProperty('published', Property::fromValue('2015-10-20T15:49:00-0700'))
+            ->addProperty('url', Property::fromValue('http://example.com/post/fsjeuu8372'))
+            ->addProperty('author', Property::fromValue($author))
+            ->addProperty('name', Property::fromValue('Hello World'))
+            ->addProperty('content', Property::fromValue('This is a blog post'))
+            ->addProperty('category', Property::fromValue('Posts'))
             ;
         $jf2Array = json_decode(
             json_encode($jf2, JSON_THROW_ON_ERROR),
@@ -144,7 +144,7 @@ class ObjectToJsonTest extends TestCase
     {
         $content = $this->loadExample($path);
         $testArray = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
-        $jf2 = Item::fromJsonString($content);
+        $jf2 = Item::fromString($content);
         $jf2Array = json_decode(
             json_encode($jf2, JSON_THROW_ON_ERROR),
             true,

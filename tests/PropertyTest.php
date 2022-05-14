@@ -9,6 +9,7 @@ use Lostfocus\Jf2\Interfaces\ObjectInterface;
 use Lostfocus\Jf2\Property\Content;
 use Lostfocus\Jf2\Property\Item as ItemProperty;
 use Lostfocus\Jf2\Property\Media;
+use Lostfocus\Jf2\Property\References;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -146,5 +147,36 @@ class PropertyTest extends TestCase
         self::assertInstanceOf(Property::class, $property);
         self::assertSame($newStringValue, (string)$property);
         self::assertSame($newStringValue, $property->getValue());
+    }
+
+    /**
+     * @return void
+     * @throws Exception\Jf2Exception
+     */
+    public function testReferences(): void
+    {
+        $referenceArray = [
+            'http://bob.example.com/post/100' => [
+                'type' => 'entry',
+                'published' => '2015-10-18T12:33:00-0700',
+                'url' => 'http://bob.example.com/post/100',
+                'author' => 'http://bob.example.com',
+                'name' => 'My First Post',
+                'content' => 'This is my first post on my new blog, I hope you like it',
+            ],
+            'http://bob.example.com' => [
+                'type' => 'card',
+                'name' => 'Bob',
+                'url' => 'http://bob.example.com',
+                'photo' => 'http://bob.example.com/mypicture.jpg',
+            ],
+        ];
+        $property = References::fromValue($referenceArray);
+        self::assertInstanceOf(References::class, $property);
+        self::assertCount(2, $property);
+        foreach ($property as $key => $value) {
+            self::assertInstanceOf(ObjectInterface::class, $value);
+            self::assertSame($referenceArray[$key]['type'], $value->getType());
+        }
     }
 }

@@ -10,13 +10,12 @@ use Lostfocus\Jf2\Interfaces\PropertyInterface;
 use Lostfocus\Jf2\Property\Content;
 use Lostfocus\Jf2\Property\Item as ItemProperty;
 use Lostfocus\Jf2\Property\Media;
-use RuntimeException;
 use stdClass;
 
 class Property implements PropertyInterface
 {
     protected array $value = [];
-    private int $position = 0;
+    protected int $position = 0;
 
     public function current(): mixed
     {
@@ -32,7 +31,7 @@ class Property implements PropertyInterface
         ++$this->position;
     }
 
-    public function key(): int
+    public function key(): int|string
     {
         return $this->position;
     }
@@ -68,6 +67,9 @@ class Property implements PropertyInterface
         return (string)$this->value[0];
     }
 
+    /**
+     * @throws Jf2Exception
+     */
     public static function fromString(string $value): PropertyInterface
     {
         return (new self())
@@ -136,7 +138,10 @@ class Property implements PropertyInterface
             return Content::fromClass($value);
         }
 
-        throw new RuntimeException('oh no');
+        throw new Jf2Exception(
+            'Unexpected type: '.gettype($value),
+            Jf2Exception::UNEXPECTED_TYPE
+        );
     }
 
     /**
@@ -161,9 +166,12 @@ class Property implements PropertyInterface
     }
 
 
+    /**
+     * @throws Jf2Exception
+     */
     public function addValue(PropertyInterface|array|string|stdClass|ObjectInterface $value): PropertyInterface
     {
-        if (is_string($value) || ($value instanceof ObjectInterface)) {
+        if (is_string($value) || ($value instanceof ObjectInterface) || ($value instanceof Media)) {
             $this->value[] = $value;
 
             return $this;
@@ -182,8 +190,10 @@ class Property implements PropertyInterface
 
             return $this;
         }
-
-        throw new RuntimeException('oh no');
+        throw new Jf2Exception(
+            'Unexpected type: '.gettype($value),
+            Jf2Exception::UNEXPECTED_TYPE
+        );
     }
 
     /**
@@ -245,7 +255,7 @@ class Property implements PropertyInterface
      * @return mixed
      * @throws Jf2Exception
      */
-    private function serializeValue(mixed $value): mixed
+    protected function serializeValue(mixed $value): mixed
     {
         if (is_string($value) || is_numeric($value) || ($value === null)) {
             return $value;

@@ -25,28 +25,6 @@ class Jf2Test extends TestCase
     /**
      * @throws Jf2Exception
      */
-    public function testArrayType(): void
-    {
-        $this->expectException(Jf2Exception::class);
-        (new Item())
-            ->addProperty('type', ['entry']);
-    }
-
-    /**
-     * @throws Jf2Exception
-     */
-    public function testStdClassType(): void
-    {
-        $type = new stdClass();
-        $type->test = 'entry';
-        $this->expectException(Jf2Exception::class);
-        (new Item())
-            ->addProperty('type', $type);
-    }
-
-    /**
-     * @throws Jf2Exception
-     */
     public function testAddChildren(): void
     {
         $child1 = new stdClass();
