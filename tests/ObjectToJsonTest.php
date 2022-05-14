@@ -100,7 +100,12 @@ class ObjectToJsonTest extends TestCase
     {
         $path = 'jf2/spec-ex-07.json';
         $this->assertSerializedArrayIsDecodedArray($path);
+
+        $content = $this->loadExample($path);
+        $jf2 = Item::fromString($content);
+        self::assertNotNull($jf2->getReference('http://alice.example.com'));
     }
+
     /**
      * @throws Exception\Jf2Exception
      * @throws JsonException

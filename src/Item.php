@@ -273,4 +273,68 @@ class Item implements ObjectInterface
     {
         return $this->properties;
     }
+
+    /**
+     * @param  string  $key
+     * @param  array<mixed>|string|stdClass  $value
+     * @return ObjectInterface
+     * @throws Jf2Exception
+     */
+    public function add(string $key, array|string|stdClass $value): ObjectInterface
+    {
+        return $this->addProperty($key, Property::fromValue($value));
+    }
+
+    /**
+     * @param  string  $key
+     * @param  array<mixed>|string|stdClass  $value
+     * @return ObjectInterface
+     * @throws Jf2Exception
+     */
+    public function replace(string $key, array|string|stdClass $value): ObjectInterface
+    {
+        return $this->replaceProperty($key, Property::fromValue($value));
+    }
+
+
+    /**
+     * @param  string  $key
+     * @return mixed
+     */
+    public function get(string $key): mixed
+    {
+        $property = $this->getProperty($key);
+        if ($property === null) {
+            return null;
+        }
+        $propertyValue = $property->getValue();
+        if ($propertyValue instanceof ObjectInterface || $propertyValue instanceof PropertyInterface) {
+            return $propertyValue->jsonSerialize();
+        }
+
+        return $propertyValue;
+    }
+
+    public function has(string $key): bool
+    {
+        return $this->hasProperty($key);
+    }
+
+    public function remove(string $key): ObjectInterface
+    {
+        return $this->removeProperty($key);
+    }
+
+    public function getReference(string $key): ?ObjectInterface
+    {
+        if(!array_key_exists('references', $this->properties)) {
+            return null;
+        }
+
+        if($this->properties['references'] instanceof References) {
+            return $this->properties['references']->getReference($key);
+        }
+
+        return null;
+    }
 }
