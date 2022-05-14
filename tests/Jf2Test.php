@@ -14,12 +14,20 @@ class Jf2Test extends TestCase
      */
     public function testAddType(): void
     {
-        $jf2 = (new Item())
+        $item = (new Item())
             ->addProperty('type', Property::fromString('entry'));
-        self::assertCount(1, $jf2);
-        self::assertSame('entry', $jf2->getType());
+        self::assertCount(1, $item);
+        self::assertSame('entry', $item->getType());
         $this->expectException(Jf2Exception::class);
-        $jf2->addProperty('type', Property::fromString('entry'));
+        $item->addProperty('type', Property::fromString('entry'));
+
+        $item2 = (new Item())
+            ->add('type', 'entry');
+        self::assertCount(1, $item2);
+        self::assertSame('entry', $item2->getType());
+        $this->expectException(Jf2Exception::class);
+        $item2->add('type', 'entry');
+
     }
 
     /**
