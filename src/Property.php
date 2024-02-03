@@ -243,7 +243,7 @@ class Property implements PropertyInterface
     /**
      * @throws Jf2Exception
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         if (count($this->value) < 1) {
             return null;
