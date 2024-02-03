@@ -10,11 +10,10 @@ use Lostfocus\Jf2\Property\Content;
 use Lostfocus\Jf2\Property\Item as ItemProperty;
 use Lostfocus\Jf2\Property\Media;
 use Lostfocus\Jf2\Property\References;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @group property
- */
+#[Group(name: 'property')]
 class PropertyTest extends TestCase
 {
     /**

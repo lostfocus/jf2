@@ -83,12 +83,12 @@ class Jf2Test extends TestCase
             ->addProperty('image', Property::fromString('http://example.com/image1.jpg'));
 
         $jf2Serialize = $jf2->jsonSerialize();
-        self::assertObjectHasAttribute('image', $jf2Serialize);
+        self::assertObjectHasProperty('image', $jf2Serialize);
         self::assertIsString($jf2Serialize->image);
 
         $jf2->addProperty('image', Property::fromString('http://example.com/image2.jpg'));
         $jf2Serialize2 = $jf2->jsonSerialize();
-        self::assertObjectHasAttribute('image', $jf2Serialize2);
+        self::assertObjectHasProperty('image', $jf2Serialize2);
         self::assertIsArray($jf2Serialize2->image);
         self::assertCount(2, $jf2Serialize2->image);
     }

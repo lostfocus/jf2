@@ -11,7 +11,7 @@ permissions:
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
   cancel-in-progress: true
-  
+
 jobs:
   test:
 
@@ -19,7 +19,6 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.1"
           - "8.2"
           - "8.3"
 
