@@ -2,7 +2,7 @@ name: PHP Composer
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, matrix ]
   pull_request:
     branches: [ main, develop ]
 
@@ -13,8 +13,20 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version:
+          - "8.0"
+          - "8.1"
+          - "8.2"
+          - "8.3"
 
     steps:
+    - name: "Set up PHP"
+      uses: "shivammathur/setup-php@v2"
+      with:
+        php-version: "${{ matrix.php-version }}"
+
     - uses: actions/checkout@v3
 
     - name: Validate composer.json and composer.lock
