@@ -17,3 +17,4 @@ composer.lock
 docs
 vendor
 .phpdoc
+.phpunit.result.cache
